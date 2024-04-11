@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Pizzeria {
-	String name;
+	String name = "RaPizza";
 	ArrayList<User> clients;
 	ArrayList<CataloguedPizza> catalog;
 	ArrayList<Ingredient> used_ingredients;

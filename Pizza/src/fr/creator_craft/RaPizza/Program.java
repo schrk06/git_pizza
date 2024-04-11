@@ -37,6 +37,8 @@ class Application extends JFrame {
 	Application() {
 		pizzeria.loadAll();
 		
+		setTitle(pizzeria.name);
+		
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -48,16 +50,22 @@ class Application extends JFrame {
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel buttonPanel = new JPanel(new FlowLayout());
+        
+        JButton clientsButton = new JButton("Clients");
+        JButton catalogButton = new JButton("Catalog");
+        JButton ingredientsButton = new JButton("Ingredients");
+        
+        buttonPanel.add(clientsButton);
+        buttonPanel.add(catalogButton);
+        buttonPanel.add(ingredientsButton);
+        
 
-        JButton buyButton = new JButton("Buy Pizza");
+//        buyButton.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                JOptionPane.showMessageDialog(Application.this, "Pizza bought successfully!");
+//            }
+//        });
 
-        buyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(Application.this, "Pizza bought successfully!");
-            }
-        });
-
-        buttonPanel.add(buyButton);
 
         JPanel ingredientsPanel = new JPanel(new GridLayout(3, 2));
         ingredientsPanel.setBorder(BorderFactory.createTitledBorder("Ingredients"));
