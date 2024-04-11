@@ -20,7 +20,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class Program {
-
+	
 	public static void main(String[] args) {
 		System.out.println("Hello world!");
 		
@@ -31,8 +31,12 @@ public class Program {
 
 class Application extends JFrame {
 	private static final long serialVersionUID = 1L;
+	
+	public static Pizzeria pizzeria = new Pizzeria();
 
 	Application() {
+		pizzeria.loadAll();
+		
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {

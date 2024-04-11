@@ -3,8 +3,9 @@ package fr.creator_craft.RaPizza;
 import java.util.ArrayList;
 
 public class Order {
+	public User user;
 	private ArrayList<Pizza> pizzas;
-	private ArrayList<Drink> drinks;
+	private ArrayList<String> drinks;
 	
 	private DeliveryDriver driver;
 	
@@ -12,9 +13,18 @@ public class Order {
 	
 	private OrderState state;
 	
-	public Order() {
+	public Order(User user, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price) {
+		this.user = user;
+		this.pizzas = pizzas;
+		this.drinks = drinks;
+		this.state = OrderState.Delivered;
+		this.price = price;
+	}
+	
+	public Order(User user) { // new order
+		this.user = user;
 		pizzas = new ArrayList<Pizza>();
-		drinks = new ArrayList<Drink>();
+		drinks = new ArrayList<String>();
 		state = OrderState.Choice;
 		price = 0;
 		driver = null;
@@ -23,8 +33,8 @@ public class Order {
 	public Pizza[] getPizzas() {
 		return pizzas.toArray(new Pizza[0]);
 	}
-	public Drink[] getDrinks() {
-		return drinks.toArray(new Drink[0]);
+	public String[] getDrinks() {
+		return drinks.toArray(new String[0]);
 	}
 	public DeliveryDriver getDriver() {
 		return driver;
@@ -37,9 +47,6 @@ public class Order {
 	}
 
 
-	enum Drink {
-		Water
-	}
 	enum OrderState {
 		Choice,
 		Preparation,
