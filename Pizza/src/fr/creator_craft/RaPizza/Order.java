@@ -1,6 +1,7 @@
 package fr.creator_craft.RaPizza;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 
 public class Order {
@@ -16,6 +17,13 @@ public class Order {
 	public OrderState state;
 	
 	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price, long date) {
+		pizzas.sort(new Comparator<Pizza>() {
+		    @Override
+		    public int compare(Pizza left, Pizza right) {
+		        // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+		        return 0;
+		    }
+		});
 		this.client = client;
 		this.pizzas = pizzas.toArray(new Pizza[0]);
 		this.drinks = drinks.toArray(new String[0]);

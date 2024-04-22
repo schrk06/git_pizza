@@ -1,107 +1,78 @@
 package fr.creator_craft.RaPizza;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Insets;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JComponent;
 
 public class Program {
 	
 	public static void main(String[] args) {
-		System.out.println("Hello world!");
-		
-		new Application(); // ..............................
+		new Application();
 	}
 
 }
 
-class Application extends JFrame {
-	private static final long serialVersionUID = 1L;
-	
-	public static Pizzeria pizzeria = new Pizzeria();
+class MyTabbedPaneUI extends javax.swing.plaf.basic.BasicTabbedPaneUI {
 
-	Application() {
-		pizzeria.loadAll();
-		
-		setTitle(pizzeria.name);
-		
-		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-		
-//		SwingUtilities.updateComponentTreeUI(this);
-//		pack();
-		
-		JPanel mainPanel = new JPanel(new BorderLayout());
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        
-        JButton clientsButton = new JButton("Clients");
-        JButton catalogButton = new JButton("Catalog");
-        JButton ingredientsButton = new JButton("Ingredients");
-        
-        buttonPanel.add(clientsButton);
-        buttonPanel.add(catalogButton);
-        buttonPanel.add(ingredientsButton);
-        
+//    @Override
+//    protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect) {
+//        Color savedColor = g.getColor();
+//        g.setColor(Color.PINK);
+//        g.fillRect(rects[tabIndex].x, rects[tabIndex].y, 
+//               rects[tabIndex].width, rects[tabIndex].height);
+//        g.setColor(Color.BLUE);
+//        g.drawRect(rects[tabIndex].x, rects[tabIndex].y, 
+//               rects[tabIndex].width, rects[tabIndex].height);
+//        g.setColor(savedColor);
+//    }
+    @Override
+    protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
+    	super.paintTabArea(g, tabPlacement, selectedIndex);
+    }
+    @Override
+    	public void paint(Graphics g, JComponent c) {
+    	int tabPlacement = tabPane.getTabPlacement();
 
-//        buyButton.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                JOptionPane.showMessageDialog(Application.this, "Pizza bought successfully!");
-//            }
-//        });
+        Insets insets = c.getInsets(); Dimension size = c.getSize();
 
+        // Paint the background for the tab area
+        if ( !tabPane.isOpaque() ) {
+            Color background = c.getBackground();
+                g.setColor(background);
+            switch ( tabPlacement ) {
+            case LEFT:
+            	System.out.println("NOP 1");
+                g.fillRect( insets.left, insets.top,
+                            calculateTabAreaWidth( tabPlacement, runCount, maxTabWidth ),
+                            size.height - insets.bottom - insets.top );
+                break;
+            case BOTTOM:
+            	System.out.println("NOP 2");
+                int totalTabHeight = calculateTabAreaHeight( tabPlacement, runCount, maxTabHeight );
+                g.fillRect( insets.left, size.height - insets.bottom - totalTabHeight,
+                            size.width - insets.left - insets.right,
+                            totalTabHeight );
+                break;
+            case RIGHT:
+            	System.out.println("NOP 3");
+                int totalTabWidth = calculateTabAreaWidth( tabPlacement, runCount, maxTabWidth );
+                g.fillRect( size.width - insets.right - totalTabWidth,
+                            insets.top, totalTabWidth,
+                            size.height - insets.top - insets.bottom );
+                break;
+            case TOP:
+            default:
+            	System.out.println("NOP");
+                g.fillRect( insets.left, insets.top,
+                            size.width - insets.right - insets.left,
+                            calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight) );
+//                paintHighlightBelowTab();
+            }
+        }
 
-        JPanel ingredientsPanel = new JPanel(new GridLayout(3, 2));
-        ingredientsPanel.setBorder(BorderFactory.createTitledBorder("Ingredients"));
-
-        JCheckBox cheeseCheckbox = new JCheckBox("Cheese");
-        JCheckBox pepperoniCheckbox = new JCheckBox("Pepperoni");
-        JCheckBox mushroomsCheckbox = new JCheckBox("Mushrooms");
-
-        ingredientsPanel.add(cheeseCheckbox);
-        ingredientsPanel.add(pepperoniCheckbox);
-        ingredientsPanel.add(mushroomsCheckbox);
-
-        JLabel quantityLabel = new JLabel("Quantity:");
-        JTextField quantityField = new JTextField("0", 5);
-        
-
-        JPanel quantityPanel = new JPanel();
-        quantityPanel.setLayout(new BoxLayout(quantityPanel, BoxLayout.Y_AXIS));
-        quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        quantityPanel.add(quantityLabel);
-//        quantityField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        quantityPanel.add(quantityField);
-        
-//        quantityLabel.setSize(100, quantityLabel.getHeight());
-
-        mainPanel.add(buttonPanel, BorderLayout.NORTH);
-        mainPanel.add(ingredientsPanel, BorderLayout.CENTER);
-        mainPanel.add(quantityPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
-
-        pack();
-        // setSize(300, 200);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
-		
-	}
-}
+        super.paint( g, c );
+    	}
+ }
