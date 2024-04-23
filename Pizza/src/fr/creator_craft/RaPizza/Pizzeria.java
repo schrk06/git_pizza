@@ -6,13 +6,26 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Pizzeria {
-	String name = "RaPizza";
-	ArrayList<User> clients;
-	ArrayList<CataloguedPizza> catalog;
-	ArrayList<Ingredient> used_ingredients;
-	ArrayList<Order> order_history;
-	ArrayList<Order> current_orders;
-	ArrayList<DeliveryDriver> drivers;
+	private String name = "RaPizza";
+	private ArrayList<User> clients;
+	private ArrayList<CataloguedPizza> catalog;
+	private ArrayList<Ingredient> used_ingredients;
+	private ArrayList<Order> order_history;
+	private ArrayList<Order> current_orders;
+	private ArrayList<DeliveryDriver> drivers;
+	
+	public String getName() { return name; }
+	public User[] getClients() { return (User[])clients.toArray(); }
+	public CataloguedPizza[] getCatalog() { return (CataloguedPizza[])catalog.toArray(); }
+	public Ingredient[] getIngredients() { return (Ingredient[])used_ingredients.toArray(); }
+	public Order[] getOrderHistory() { return (Order[])order_history.toArray(); }
+	public Order[] getOrders() { return (Order[])current_orders.toArray(); }
+	public DeliveryDriver[] getDrivers() { return (DeliveryDriver[])drivers.toArray(); }
+	
+	public void addClient(User client) { clients.add(client); }
+	public void addPizza(CataloguedPizza pizza) { catalog.add(pizza); }
+	public void addIngredient(Ingredient ing) { used_ingredients.add(ing); }
+	public void addDriver(DeliveryDriver driver) { drivers.add(driver); }
 	
 	public Pizzeria() {
 		clients = new ArrayList<User>();
