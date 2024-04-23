@@ -1,4 +1,4 @@
-package fr.creator_craft.RaPizza;
+package fr.creator_craft.PizzaUI;
 
 public class Program {
 	

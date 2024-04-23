@@ -1,18 +1,23 @@
-package fr.creator_craft.RaPizza;
+package fr.creator_craft.PizzaUI;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,8 +29,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
+import fr.creator_craft.RaPizza.Pizzeria;
+
+@SuppressWarnings("serial")
 public class Application extends JFrame{
-	private static final long serialVersionUID = 1L;
 	
 	Font font = new Font("Arial", Font.BOLD, 14);
 
@@ -89,8 +96,8 @@ public class Application extends JFrame{
         
         setFocusable(true);
 		addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {}
+			@Override public void keyTyped(KeyEvent e) {}
+			@Override public void keyReleased(KeyEvent e) {}
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (tabs.getSelectedIndex() == 0 && e.getKeyChar() >= '0' && e.getKeyChar() <= '9')
@@ -108,15 +115,11 @@ public class Application extends JFrame{
 					}
 				}
 			}
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
 		});
 	}
 	
 	private DefaultTableModel addTable(JPanel panel, Object contraints, String[] columns, int width, int height) {
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
-        	private static final long serialVersionUID = 1L;
 			public boolean isCellEditable(int rowIndex, int colIndex) { return false; }
         };
         JTable table = new JTable(model);
@@ -159,30 +162,39 @@ public class Application extends JFrame{
         sendingTableModel = addTable(panel, c, new String[]{"ID", "Destination", "Client"}, 0, 0);
         
         panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-        
 		return panel;
 	}
 	
 	private Component makeClientsView() {
 		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		
-//		JButton button = new JButton("Text");
-//		button.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				tabs.setSelectedIndex(0);
-//			}
-//		});
+		JButton button = new JButton("Add client");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new FramePopup("Tests") {
+					@Override
+					protected boolean quit(boolean canceled, int[] int_values, String[] str_values) {
+						return true;
+					}
+				};
+			}
+		});
+		JPanel p = new JPanel(new FlowLayout());
+		p.add(button);
+		panel.add(p);
 		
 		clientsTableModel = addTable(panel, null, new String[]{"Phone", "Name", "Mail", "Balance"}, 0, 0);
 		
+		panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 		return panel;
 	}
 	
 	private Component makeCatalogsView() {
 		JPanel panel = new JPanel();
-		pizzasTableModel = addTable(panel, null, new String[]{"Pizza name", "Ingredients", "Base price"}, 0, 0);
-		drinksTableModel = addTable(panel, null, new String[]{"Drink name"}, 0, 0);
+		pizzasTableModel = addTable(panel, null, new String[]{"Pizza name", "Ingredients", "Base price"}, 400, 100);
+		drinksTableModel = addTable(panel, null, new String[]{"Drink name"}, 400, 100);
 		return panel;
 	}
 	private Component makeDriversView() {
