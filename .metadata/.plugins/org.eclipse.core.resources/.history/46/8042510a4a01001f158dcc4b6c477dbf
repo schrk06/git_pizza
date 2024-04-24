@@ -1,0 +1,9 @@
+package fr.creator_craft.RaPizza;
+
+public class Program {
+	
+	public static void main(String[] args) {
+		new Application();
+	}
+
+}

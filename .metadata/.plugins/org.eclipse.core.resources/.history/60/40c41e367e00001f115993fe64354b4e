@@ -1,0 +1,220 @@
+package fr.creator_craft.RaPizza;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.UIResource;
+
+public class Program {
+	
+	public static void main(String[] args) {
+		System.out.println("Hello world!");
+		
+//		new Application(); // ..............................
+		
+		JFrame frame = new JFrame("Hotel");
+//        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setBackground(new Color(0, 255, 0));
+        frame.setForeground(new Color(255, 255, 0));
+        
+        frame.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {}
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {	
+			}
+        });
+
+        Font font = new Font("Arial", Font.PLAIN, 16);
+
+        Color backgroundColor = new Color(225, 225, 225);
+        Color textColor = Color.BLACK;
+        Color buttonColor = new Color(0, 153, 153);
+
+        JTabbedPane onglet = new JTabbedPane();
+        System.out.println(onglet.getUI());
+        onglet.setUI(new MyTabbedPaneUI());
+        onglet.setBackground(new Color(255, 0, 0));
+        onglet.setForeground(new Color(0, 0, 255));
+        
+        onglet.addTab("Overview", null); // Current orders
+        onglet.addTab("Clients", null);
+        onglet.addTab("Catalog", null);
+        onglet.addTab("Drivers", null);
+        onglet.addTab("Order history", null);
+        onglet.setIconAt(0, new ImageIcon());
+        frame.add(onglet);
+        
+        
+        frame.setSize(720, 480);
+//        frame.setLocation(0, 0);
+        frame.setVisible(true);
+	}
+
+}
+
+class MyTabbedPaneUI extends javax.swing.plaf.basic.BasicTabbedPaneUI {
+
+//    @Override
+//    protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect) {
+//        Color savedColor = g.getColor();
+//        g.setColor(Color.PINK);
+//        g.fillRect(rects[tabIndex].x, rects[tabIndex].y, 
+//               rects[tabIndex].width, rects[tabIndex].height);
+//        g.setColor(Color.BLUE);
+//        g.drawRect(rects[tabIndex].x, rects[tabIndex].y, 
+//               rects[tabIndex].width, rects[tabIndex].height);
+//        g.setColor(savedColor);
+//    }
+    @Override
+    protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
+    	super.paintTabArea(g, tabPlacement, selectedIndex);
+    }
+    @Override
+    	public void paint(Graphics g, JComponent c) {
+    	int tabPlacement = tabPane.getTabPlacement();
+
+        Insets insets = c.getInsets(); Dimension size = c.getSize();
+
+        // Paint the background for the tab area
+        if ( tabPane.isOpaque() ) {
+            Color background = new Color(0, 255, 0);//c.getBackground();
+//            if (background instanceof UIResource && tabAreaBackground != null) {
+//                g.setColor(tabAreaBackground);
+//            }
+//            else
+                g.setColor(background);
+            switch ( tabPlacement ) {
+            case LEFT:
+                g.fillRect( insets.left, insets.top,
+                            calculateTabAreaWidth( tabPlacement, runCount, maxTabWidth ),
+                            size.height - insets.bottom - insets.top );
+                break;
+            case BOTTOM:
+                int totalTabHeight = calculateTabAreaHeight( tabPlacement, runCount, maxTabHeight );
+                g.fillRect( insets.left, size.height - insets.bottom - totalTabHeight,
+                            size.width - insets.left - insets.right,
+                            totalTabHeight );
+                break;
+            case RIGHT:
+                int totalTabWidth = calculateTabAreaWidth( tabPlacement, runCount, maxTabWidth );
+                g.fillRect( size.width - insets.right - totalTabWidth,
+                            insets.top, totalTabWidth,
+                            size.height - insets.top - insets.bottom );
+                break;
+            case TOP:
+            default:
+            	System.out.println("NOP");
+                g.fillRect( insets.left, insets.top,
+                            size.width - insets.right - insets.left,
+                            calculateTabAreaHeight(tabPlacement, runCount, maxTabHeight) );
+//                paintHighlightBelowTab();
+            }
+        }
+
+        super.paint( g, c );
+    	}
+ }
+
+class Application extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
+	public static Pizzeria pizzeria = new Pizzeria();
+
+	Application() {
+		pizzeria.loadAll();
+		
+		setTitle(pizzeria.name);
+		
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		
+//		SwingUtilities.updateComponentTreeUI(this);
+//		pack();
+		
+		JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        
+        JButton clientsButton = new JButton("Clients");
+        JButton catalogButton = new JButton("Catalog");
+        JButton ingredientsButton = new JButton("Ingredients");
+        
+        buttonPanel.add(clientsButton);
+        buttonPanel.add(catalogButton);
+        buttonPanel.add(ingredientsButton);
+        
+
+//        buyButton.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                JOptionPane.showMessageDialog(Application.this, "Pizza bought successfully!");
+//            }
+//        });
+
+
+        JPanel ingredientsPanel = new JPanel(new GridLayout(3, 2));
+        ingredientsPanel.setBorder(BorderFactory.createTitledBorder("Ingredients"));
+
+        JCheckBox cheeseCheckbox = new JCheckBox("Cheese");
+        JCheckBox pepperoniCheckbox = new JCheckBox("Pepperoni");
+        JCheckBox mushroomsCheckbox = new JCheckBox("Mushrooms");
+
+        ingredientsPanel.add(cheeseCheckbox);
+        ingredientsPanel.add(pepperoniCheckbox);
+        ingredientsPanel.add(mushroomsCheckbox);
+
+        JLabel quantityLabel = new JLabel("Quantity:");
+        JTextField quantityField = new JTextField("0", 5);
+        
+
+        JPanel quantityPanel = new JPanel();
+        quantityPanel.setLayout(new BoxLayout(quantityPanel, BoxLayout.Y_AXIS));
+        quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        quantityPanel.add(quantityLabel);
+//        quantityField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        quantityPanel.add(quantityField);
+        
+//        quantityLabel.setSize(100, quantityLabel.getHeight());
+
+        mainPanel.add(buttonPanel, BorderLayout.NORTH);
+        mainPanel.add(ingredientsPanel, BorderLayout.CENTER);
+        mainPanel.add(quantityPanel, BorderLayout.SOUTH);
+
+        add(mainPanel);
+
+        pack();
+        // setSize(300, 200);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+		
+	}
+}
