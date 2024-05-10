@@ -1,5 +1,0 @@
-package fr.creator_craft.PizzaUI;
-
-public abstract class FramePopup {
-
-}
