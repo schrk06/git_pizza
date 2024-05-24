@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,15 +19,18 @@ public abstract class FramePopup extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		this.init();
+		panel.add(this.init());
 
 		JPanel defaultButtons = new JPanel(new FlowLayout());
 		JButton okButton = new JButton("OK");
 		defaultButtons.add(okButton);
-		defaultButtons.add(new JButton("Cancel"));
+    JButton cancelButton = new JButton("Cancel");
+		defaultButtons.add(cancelButton);
 
 		panel.add(defaultButtons);
 		this.add(panel);
+
+    panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
 		this.pack();
 		this.setVisible(true);
@@ -34,22 +38,27 @@ public abstract class FramePopup extends JFrame {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+        if (quit(false)) dispose();
+			}
+		});
+    cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+        quit(true);
+        dispose();
 			}
 		});
 
 	}
 
-	protected void init() {}
+	protected abstract JPanel init();
 
 	/** This method is call when the "OK" or "Cancel" button is pressed. (Does nothing when window naturally close)
 	 *
 	 * @param canceled
-	 * @param int_values
-	 * @param str_values
 	 * @return True to close the window, false otherwise
 	 */
-	protected abstract boolean quit(boolean canceled, int[] int_values, String[] str_values);
+	protected abstract boolean quit(boolean canceled);
 
 }
 

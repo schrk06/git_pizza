@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -22,10 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.SpringLayout.Constraints;
 import javax.swing.table.DefaultTableModel;
 
 import RaPizza.model.Pizzeria;
@@ -176,7 +177,7 @@ public class Application extends JFrame{
 		c.gridy = 4;
 		sendingTableModel = addTable(panel, c, new String[]{"ID", "Destination", "Client"}, 0, 0);
 
-		panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+		panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16)); // Padding
 		return panel;
 	}
 
@@ -189,9 +190,21 @@ public class Application extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new FramePopup("Tests") {
-					@Override
-					protected boolean quit(boolean canceled, int[] int_values, String[] str_values) {
-						return true;
+          // Variables de la popup add_client
+          JTextField client_name/* , client_mail, client_phone*/;
+					protected JPanel init() {
+            JPanel add_client_panel = new JPanel(new GridLayout(4, 1));
+            add_client_panel.add(new JLabel("Client name"));
+            add_client_panel.add(client_name = new JTextField());
+
+            add_client_panel.add(new JPanel()); // Empty object for space
+
+            add_client_panel.add(new JLabel("Client mail.."));
+
+            return add_client_panel;
+          }
+					protected boolean quit(boolean canceled) {
+						return client_name.getText().length() > 2; // Vérifier si les entrées sont bonnes
 					}
 				};
 			}
