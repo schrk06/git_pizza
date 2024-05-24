@@ -5,7 +5,7 @@ public class Pizza {
 	public Size size;
 	public boolean hot_sauce;
 	public int count;
-	
+
 	enum Size { Dwarf, Human, Ogress }
 
 	public Pizza(CataloguedPizza pizza, int size, int count, boolean hot_sauce) {

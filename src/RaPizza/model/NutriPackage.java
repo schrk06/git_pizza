@@ -9,12 +9,12 @@ public class NutriPackage {
 	final float glucides, sucre;
 	/* Others */
 	final float protéine, fibreAlimentaire, cholestérol, sodium, eau;
-	
+
 	final float vitamines[];// = new float[12]; // A, B1 .. K
-	
+
 	/* Minéraux */
 	final float calcium, cuivre, fer, magnésium, manganèse, phosphore, potassium, sélénium, zinc;
-	
+
 	NutriPackage(int a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float[] vitamines, float calcium, float cuivre, float fer, float magnésium, float manganèse, float phosphore, float potassium, float sélénium, float zinc) {
 		this.valeurCalorique = a;
 		this.lipides = b;
@@ -29,7 +29,7 @@ public class NutriPackage {
 		this.sodium = k;
 		this.eau = l;
 		this.vitamines = vitamines;
-		
+
 		this.calcium = calcium;
 		this.cuivre = cuivre;
 		this.fer = fer;

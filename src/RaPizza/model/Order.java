@@ -9,13 +9,13 @@ public class Order {
 	public Pizza[] pizzas;
 	public String[] drinks;
 	public Date date;
-	
+
 	public DeliveryDriver driver;
-	
+
 	public float price;
-	
+
 	public OrderState state;
-	
+
 	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price, long date) {
 		pizzas.sort(new Comparator<Pizza>() {
 		    @Override
@@ -31,7 +31,7 @@ public class Order {
 		this.price = price;
 		this.date = new Date();
 	}
-	
+
 	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks) { // new order
 		this.client = client;
 		pizzas = new ArrayList<Pizza>();
@@ -41,7 +41,7 @@ public class Order {
 		driver = null;
 		date = new Date();
 	}
-	
+
 	public boolean sended(DeliveryDriver driver) {
 		if (state != OrderState.Preparation | driver == null)
 			return false;
