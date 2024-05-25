@@ -2,15 +2,17 @@ package RaPizza.model;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Pizzeria {
+  private long orderIDCounter, pizzaIDCounter, ingredientIDCounter, driverIDCounter;
 	private String name = "RaPizza";
 	private ArrayList<User> clients;
 	private ArrayList<CataloguedPizza> catalog;
 	private ArrayList<Ingredient> used_ingredients;
-	private ArrayList<Order> order_history;
+	private ArrayList<ArchivedOrder> order_history;
 	private ArrayList<Order> current_orders;
 	private ArrayList<DeliveryDriver> drivers;
 
@@ -18,11 +20,11 @@ public class Pizzeria {
 	public User[] getClients() { return clients.toArray(new User[0]);} // (User[])clients.toArray()
 	public CataloguedPizza[] getCatalog() { return (CataloguedPizza[])catalog.toArray(); }
 	public Ingredient[] getIngredients() { return (Ingredient[])used_ingredients.toArray(); }
-	public Order[] getOrderHistory() { return (Order[])order_history.toArray(); }
+	public ArchivedOrder[] getOrderHistory() { return (ArchivedOrder[])order_history.toArray(); }
 	public Order[] getOrders() { return (Order[])current_orders.toArray(); }
 	public DeliveryDriver[] getDrivers() { return (DeliveryDriver[])drivers.toArray(); }
 
-	public void addClient(User client) { clients.add(client); }
+	// public void addClient(User client) { clients.add(client); }
 	public void addPizza(CataloguedPizza pizza) { catalog.add(pizza); }
 	public void addIngredient(Ingredient ing) { used_ingredients.add(ing); }
 	public void addDriver(DeliveryDriver driver) { drivers.add(driver); }
@@ -31,7 +33,7 @@ public class Pizzeria {
 		clients = new ArrayList<User>();
 		catalog = new ArrayList<CataloguedPizza>();
 		used_ingredients = new ArrayList<Ingredient>();
-		order_history = new ArrayList<Order>();
+		order_history = new ArrayList<ArchivedOrder>();
 		current_orders = new ArrayList<Order>();
 		drivers = new ArrayList<DeliveryDriver>();
 	}
@@ -50,19 +52,27 @@ public class Pizzeria {
 		return null;
 	}
 
-	public boolean createUser(int num, String name, String adress, String mail) {
-		if (getClient(0) != null)
+  public boolean createUser(String num, String name, String address, String mail) {
+		try {
+      return num.length() == 10 && createUser(Integer.parseInt(num.charAt(0) == '0' ? num.substring(1, 10) : num), name, address, mail);
+    } catch (Exception e) {
+      return false;
+    }
+	}
+	public boolean createUser(int num, String name, String address, String mail) {
+		if (getClient(num) != null)
 			return false;
 
-		clients.add(new User(name, adress, mail, num, 0, 0, new ArrayList<Ingredient>()));
+		clients.add(new User(name, address, mail, num, 0, 0, new ArrayList<Ingredient>()));
 
 		return true;
 	}
 
 	public boolean createOrder(User client, ArrayList<Pizza> pizza,  ArrayList<String> drinks) {
-		Order order = new Order(client, pizza, drinks);
-		if (order.price > client.getBalance())
+		Order order = new Order(client, pizza, drinks, orderIDCounter);
+		if (client == null || order.price > client.getBalance())
 			return false;
+    orderIDCounter++;
 		current_orders.add(order);
 		return true;
 	}
@@ -74,7 +84,7 @@ public class Pizzeria {
 	public boolean orderReceive(Order order) {
 		if (!order.received(false))
 			return false;
-		order_history.add(order);
+		order_history.add(new ArchivedOrder(order.ID, 0, null, 0, 0, "", order.price)); // TODO
 		current_orders.remove(order);
 		return true;
 	}
@@ -112,7 +122,7 @@ public class Pizzeria {
 			if (el.length > 4)
 			for (String drink : el[4].split(","))
 				drinks.add(drink);
-			order_history.add(new Order(clients.get(Integer.parseInt(el[0])), pizzas, drinks, Float.parseFloat(el[1]), Long.parseLong(el[2])));
+			order_history.add(new ArchivedOrder(Long.parseLong(el[2]), Integer.parseInt(el[0]), null, Long.parseLong(el[2]), Long.parseLong(el[2]), "", Float.parseFloat(el[1]))); // TODO
 		});
 	}
 
@@ -141,10 +151,40 @@ public class Pizzeria {
 	}
 
 	public void saveAll() {
+    new CSVWriter<Ingredient>("res/Ingredients", "name", used_ingredients,
+      o -> o.name);
 
+    new CSVWriter<CataloguedPizza>("res/Catalog", "pizza_name;base_price;ingredients", catalog,
+      o -> o.name + ";" + o.base_price + ";" + "...");
+
+    new CSVWriter<ArchivedOrder>("res/OrderHistory", "client_id;price;date;pizzas;drinks", order_history,
+      o -> "" + o.ID + ";" + o.clientID + ";" + o.price + ";" + o.date + ";" + "..." + ";" + o.drinks);
+
+    new CSVWriter<User>("res/Users", "name;adress;mail;phone;pizza_count;balance;allergie", clients,
+      o -> o.getName() + ";" + o.getAddress() + ";" + o.getMail() + ";" + o.getPhone() + ";" + o.getPizzaCount() + ";" + o.getBalance() + ";" + "...");
 	}
+
 }
 
 interface CSVLambda {
 	void processLine(String[] elements);
+}
+
+class CSVWriter<T> {
+  CSVWriter(String file_name, String first_line, ArrayList<T> list, CSVWriteLambda<T> l) {
+		try {
+      PrintStream writer = new PrintStream(file_name);
+      writer.println(first_line);
+			for (T o : list)
+        writer.println(l.processElement(o));
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+}
+
+interface CSVWriteLambda<T> {
+	String processElement(T o);
 }

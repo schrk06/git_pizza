@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class Order {
+  public final long ID;
 	public User client;
 	public Pizza[] pizzas;
 	public String[] drinks;
@@ -16,7 +17,7 @@ public class Order {
 
 	public OrderState state;
 
-	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price, long date) {
+	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price, long date, long ID) {
 		pizzas.sort(new Comparator<Pizza>() {
 		    @Override
 		    public int compare(Pizza left, Pizza right) {
@@ -30,9 +31,10 @@ public class Order {
 		this.state = OrderState.Delivered;
 		this.price = price;
 		this.date = new Date();
+    this.ID = ID;
 	}
 
-	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks) { // new order
+	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, long ID) { // new order
 		this.client = client;
 		pizzas = new ArrayList<Pizza>();
 		drinks = new ArrayList<String>();
@@ -40,6 +42,7 @@ public class Order {
 		price = 0;
 		driver = null;
 		date = new Date();
+    this.ID = ID;
 	}
 
 	public boolean sended(DeliveryDriver driver) {

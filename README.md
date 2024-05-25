@@ -1,18 +1,11 @@
-## Getting Started
+## Project
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+RaPizza is a study project to manage a pizzeria (clients, pizzas, orders, ...).
 
 ## Folder Structure
 
-The workspace contains two folders by default, where:
+The workspace contains three folders, where:
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+- `src`: the folder with the application model and view
+- `res`: the folder that contains data
+- `bin`: the folder that contains binaries output to execute the program

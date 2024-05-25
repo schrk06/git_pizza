@@ -62,14 +62,14 @@ public abstract class FramePopup extends JFrame {
 
 }
 
-interface MapOperator { public Object op(Object o); }
+// interface MapOperator { public Object op(Object o); }
 
-class Mapper {
-	static Object[] map(Object[] ar, MapOperator op) {
-		Object[] ret = new Object[ar.length];
-		for (int i = 0; i < ar.length; i++)
-			ret[i] = op.op(ar[i]);
-		return ret;
-	}
-}
+// class Mapper {
+// 	static Object[] map(Object[] ar, MapOperator op) {
+// 		Object[] ret = new Object[ar.length];
+// 		for (int i = 0; i < ar.length; i++)
+// 			ret[i] = op.op(ar[i]);
+// 		return ret;
+// 	}
+// }
 

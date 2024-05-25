@@ -7,11 +7,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -23,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -34,21 +32,17 @@ import RaPizza.model.User;
 
 // @SuppressWarnings("serial")
 public class Application extends JFrame{
-
-	Font font = new Font("Arial", Font.BOLD, 14);
-
-	Color backgroundColor = new Color(225, 225, 225);
-	Color textColor = Color.BLACK;
 //    Color buttonColor = new Color(0, 153, 153);
 
 	DefaultTableModel preparationTableModel, sendingTableModel, clientsTableModel, pizzasTableModel, drinksTableModel, driversTableModel, historyTableModel;
 
-	public static Pizzeria pizzeria = new Pizzeria();
+	public Pizzeria pizzeria = new Pizzeria();
 
 	JTabbedPane tabs;
 
 	Application(String theme) {
-		super(pizzeria.getName());
+		super();
+    this.setTitle(pizzeria.getName());
 		pizzeria.loadAll();
 
 
@@ -62,10 +56,10 @@ public class Application extends JFrame{
 		tabs = new JTabbedPane();
 //        tabs.setOpaque(true);
 //        tabs.setUI(new MyTabbedPaneUI());
-		tabs.setBackground(backgroundColor);
-		tabs.setForeground(textColor);
-		tabs.setFont(font);
-		tabs.setFocusable(false);
+		tabs.setBackground(new Color(225, 225, 225));
+		tabs.setForeground(Color.BLACK);
+		tabs.setFont(new Font("Arial", Font.BOLD, 14));
+		// tabs.setFocusable(false);
 
 //        ImageIcon icon = new ImageIcon("icon.png", ".");
 		tabs.addTab("Overview", null, makeGeneralView(), "Current orders"); // Current orders
@@ -96,28 +90,17 @@ public class Application extends JFrame{
 			@Override public void componentHidden(ComponentEvent e) {}
 		});
 
-		// setFocusable(true);
-		// addKeyListener(new KeyListener() {
-		// 	@Override public void keyTyped(KeyEvent e) {}
-		// 	@Override public void keyReleased(KeyEvent e) {}
-		// 	@Override
-		// 	public void keyPressed(KeyEvent e) {
-		// 		if (tabs.getSelectedIndex() == 0 && e.getKeyChar() >= '0' && e.getKeyChar() <= '9')
-		// 			text.setText((text.getText().equals("0") ? "" : text.getText()) + e.getKeyChar());
-		// 		switch (e.getKeyCode()) {
-		// 			case KeyEvent.VK_ESCAPE -> System.exit(0);
-		// 			case KeyEvent.VK_LEFT -> tabs.setSelectedIndex((tabs.getSelectedIndex() > 0 ? tabs.getSelectedIndex() : tabs.getTabCount()) - 1);
-		// 			case KeyEvent.VK_RIGHT -> tabs.setSelectedIndex(tabs.getSelectedIndex() < tabs.getTabCount() - 1 ? tabs.getSelectedIndex() + 1 : 0);
-		// 			case KeyEvent.VK_BACK_SPACE -> {
-		// 				if (tabs.getSelectedIndex() == 0)
-		// 					if (text.getText().length() == 1)
-		// 						text.setText("0");
-		// 					else
-		// 						text.setText(text.getText().substring(0, text.getText().length() - 1));
-		// 			}
-		// 		}
-		// 	}
-		// });
+    addWindowListener(new WindowListener() {
+      public void windowOpened(WindowEvent e) {}
+      public void windowClosing(WindowEvent e) {
+        pizzeria.saveAll();
+      }
+      public void windowDeiconified(WindowEvent e) {}
+      public void windowActivated(WindowEvent e) {}
+      public void windowDeactivated(WindowEvent e) {}
+      public void windowClosed(WindowEvent e) {}
+      public void windowIconified(WindowEvent e) {}
+    });
 	}
 
 	private DefaultTableModel addTable(JPanel panel, Object contraints, String[] columns, int width, int height) {
@@ -136,6 +119,14 @@ public class Application extends JFrame{
 		return model;
 	}
 
+  public void updateClientTable() {
+    User[] clients = pizzeria.getClients();
+    if (clients.length > clientsTableModel.getRowCount()) {
+      User client = clients[clients.length - 1];
+      clientsTableModel.addRow(new String[] { ""+client.getPhone(), client.getName(), client.getMail(), ""+client.getBalance() });
+    }
+  }
+
 	private Component makeGeneralView() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -147,6 +138,7 @@ public class Application extends JFrame{
     JPanel button_panel = new JPanel();
 
     JButton button_add = new JButton("New order");
+    button_add.addActionListener(new NewOrderAction(this));
     button_panel.add(button_add);
     JButton button_send = new JButton("Send");
     button_panel.add(button_send);
@@ -186,29 +178,7 @@ public class Application extends JFrame{
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		JButton button = new JButton("Add client");
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new FramePopup("Tests") {
-          // Variables de la popup add_client
-          JTextField client_name/* , client_mail, client_phone*/;
-					protected JPanel init() {
-            JPanel add_client_panel = new JPanel(new GridLayout(4, 1));
-            add_client_panel.add(new JLabel("Client name"));
-            add_client_panel.add(client_name = new JTextField());
-
-            add_client_panel.add(new JPanel()); // Empty object for space
-
-            add_client_panel.add(new JLabel("Client mail.."));
-
-            return add_client_panel;
-          }
-					protected boolean quit(boolean canceled) {
-						return client_name.getText().length() > 2; // Vérifier si les entrées sont bonnes
-					}
-				};
-			}
-		});
+    button.addActionListener(new AddClientAction(this));
 		JPanel p = new JPanel(new FlowLayout());
 		p.add(button);
 		panel.add(p);
