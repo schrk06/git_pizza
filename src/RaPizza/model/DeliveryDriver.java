@@ -1,15 +1,15 @@
 package RaPizza.model;
 
-import java.util.ArrayList;
-
 public class DeliveryDriver {
 	public final String name;
-	public final ArrayList<Review> reviews;
+  public final long id;
+	// public final ArrayList<Review> reviews;
 	public boolean isFree;
 
-	public DeliveryDriver(String name) {
+	public DeliveryDriver(String name, long id) {
 		this.name = name;
-		this.reviews = new ArrayList<Review>();
+    this.id = id;
+		// this.reviews = new ArrayList<Review>();
 		this.isFree = true;
 	}
 }

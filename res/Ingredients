@@ -1,3 +1,6 @@
-name
-Tomate
-Fromage
+name;id
+Tomate;0
+chêvre;1
+sauce bbq;2
+patates;3
+poulet;4

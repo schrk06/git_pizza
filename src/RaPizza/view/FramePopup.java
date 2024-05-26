@@ -19,7 +19,12 @@ public abstract class FramePopup extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		panel.add(this.init());
+    JPanel tmp_pane = this.init();
+    if (tmp_pane == null) {
+      dispose();
+      return;
+    }
+		panel.add(tmp_pane);
 
 		JPanel defaultButtons = new JPanel(new FlowLayout());
 		JButton okButton = new JButton("OK");

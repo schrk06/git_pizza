@@ -1,15 +1,15 @@
 package RaPizza.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 
 public class Order {
-  public final long ID;
+  public long ID;
 	public User client;
 	public Pizza[] pizzas;
 	public String[] drinks;
 	public Date date;
+  public boolean with_hot_sauce;
 
 	public DeliveryDriver driver;
 
@@ -17,56 +17,48 @@ public class Order {
 
 	public OrderState state;
 
-	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, float price, long date, long ID) {
-		pizzas.sort(new Comparator<Pizza>() {
-		    @Override
-		    public int compare(Pizza left, Pizza right) {
-		        // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-		        return 0;
-		    }
-		});
+	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, boolean hot_sauce) {
 		this.client = client;
 		this.pizzas = pizzas.toArray(new Pizza[0]);
 		this.drinks = drinks.toArray(new String[0]);
-		this.state = OrderState.Delivered;
-		this.price = price;
+		this.state = OrderState.Choice;
+		this.price = 0;
+		this.driver = null;
 		this.date = new Date();
-    this.ID = ID;
+    this.with_hot_sauce = hot_sauce;
 	}
 
-	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, long ID) { // new order
-		this.client = client;
-		pizzas = new ArrayList<Pizza>();
-		drinks = new ArrayList<String>();
-		state = OrderState.Preparation;
-		price = 0;
-		driver = null;
-		date = new Date();
+  public boolean validated(long ID) {
+    if (state != OrderState.Choice)
+			return false;
     this.ID = ID;
-	}
+    state = OrderState.Preparation;
+    return true;
+  }
 
 	public boolean sended(DeliveryDriver driver) {
-		if (state != OrderState.Preparation | driver == null)
+    System.out.println(state + " " + driver);
+		if (state != OrderState.Preparation || driver == null || !driver.isFree)
 			return false;
+    this.driver = driver;
+    driver.isFree = false;
 		state = OrderState.Delivering;
 		return true;
 	}
 	public boolean received(boolean tooLate) {
 		if (state != OrderState.Delivering)
 			return false;
-		state = OrderState.Delivered;
 //		if (tooLate);
 ////			client.isNextPizzaFree = true;
 //		else
 //			client.balance -= price;
+    driver.isFree = true;
 		return true;
 	}
 
-
-	enum OrderState {
-//		Choice,
+	public enum OrderState {
+    Choice,
 		Preparation,
-		Delivering,
-		Delivered
+		Delivering
 	}
 }
