@@ -9,7 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,7 +25,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
+import RaPizza.model.ArchivedOrder;
 import RaPizza.model.CataloguedPizza;
+import RaPizza.model.DeliveryDriver;
 import RaPizza.model.Ingredient;
 import RaPizza.model.Order;
 import RaPizza.model.Pizza;
@@ -39,11 +41,13 @@ public class Application extends JFrame{
 	DefaultTableModel preparationTableModel, sendingTableModel, clientsTableModel, pizzasTableModel, ingredientsTableModel, driversTableModel, historyTableModel;
 
 	public Pizzeria pizzeria = new Pizzeria();
+  private Application self;
 
 	JTabbedPane tabs;
 
 	Application(String theme) {
 		super();
+    self = this;
     this.setTitle(pizzeria.getName());
 		pizzeria.loadAll();
 
@@ -73,14 +77,20 @@ public class Application extends JFrame{
     // SwingUtilities.updateComponentTreeUI(this); pack();
 
 		setSize(720, 480);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
 
     addWindowListener(new WindowListener() {
       public void windowOpened(WindowEvent e) {}
       public void windowClosing(WindowEvent e) {
-        pizzeria.saveAll();
+        if (pizzeria.getOrders().length != 0)
+          Controller.WarningView(self);
+        else {
+          pizzeria.saveAll();
+          dispose();
+          System.exit(0);
+        }
       }
       public void windowDeiconified(WindowEvent e) {}
       public void windowActivated(WindowEvent e) {}
@@ -89,11 +99,12 @@ public class Application extends JFrame{
       public void windowIconified(WindowEvent e) {}
     });
 
-    ArrayList<Pizza> pizzas_test = new ArrayList<Pizza>();
-    pizzas_test.add(new Pizza(pizzeria.getCatalog()[0], 0, 3));
-    System.out.println(pizzeria.createOrder(pizzeria.getClients()[0], pizzas_test, new ArrayList<>(), false));;
-    System.out.println(pizzeria.validateOrder(pizzeria.getOrders()[pizzeria.getOrders().length - 1]));;
-    addPreparingOrderRow(pizzeria.getOrders()[0]);
+    // Tests
+    // ArrayList<Pizza> pizzas_test = new ArrayList<Pizza>();
+    // pizzas_test.add(new Pizza(pizzeria.getCatalog()[0], 0, 3));
+    // System.out.println(pizzeria.createOrder(pizzeria.getClients()[0], pizzas_test, "Coca", false));;
+    // System.out.println(pizzeria.validateOrder(pizzeria.getOrders()[pizzeria.getOrders().length - 1]));;
+    // addPreparingOrderRow(pizzeria.getOrders()[0]);
 	}
 
 	private DefaultTableModel addTable(JPanel panel, Object contraints, String[] columns, int width, int height) {
@@ -145,6 +156,24 @@ public class Application extends JFrame{
   }
   public void addIngredientRow(Ingredient ing) {
     ingredientsTableModel.addRow(new String[] { ing.name, ""+ing.id });
+  }
+
+  public void addHistoryRow(ArchivedOrder order) {
+    String pizzas = "";
+    for (int i = 0; i < order.pizzasID.length; i++)
+      pizzas += order.pizzas_count[i] + "*" + order.pizzasID[i] + "; ";
+    historyTableModel.addRow(new String[] { ""+order.ID, ""+order.clientID, pizzas, order.drinks, ""+order.driverID, ""+order.price, new Date(order.date).toString() });
+  }
+
+  public void addDriverRow(DeliveryDriver driver) {
+    driversTableModel.addRow(new String[] { ""+driver.id, driver.name, ""+driver.isFree });
+  }
+  public void updateDriverRow(DeliveryDriver driver) {
+    for (int i = 0; i < driversTableModel.getRowCount(); i++)
+      if (driversTableModel.getValueAt(i, 0).equals(""+driver.id)) {
+        driversTableModel.setValueAt(""+driver.isFree, i, 2);
+        return;
+      }
   }
 
 
@@ -208,11 +237,13 @@ public class Application extends JFrame{
 
     JPanel buttons_pane = new JPanel();
 
-    JButton button_pizza, button_drink, button_ingredient;
+    JButton button_pizza, button_ingredient;
     buttons_pane.add(button_pizza = new JButton("Add pizza"));
-    buttons_pane.add(button_drink = new JButton("Add drink"));
     buttons_pane.add(button_ingredient = new JButton("Add Ingredient"));
     panel.add(buttons_pane);
+
+    button_pizza.addActionListener(new addPizzaAction(this));
+    button_ingredient.addActionListener(new addIngredientAction(this));
 
 		pizzasTableModel = addTable(panel, null, new String[]{"Pizza name", "Ingredients", "Base price", "ID"}, 0, 0);
     ingredientsTableModel = addTable(panel, null, new String[]{"Ingredient name", "ID"}, 0, 0);
@@ -233,15 +264,22 @@ public class Application extends JFrame{
     JButton button = new JButton("Add driver");
     button_pane.add(button);
     panel.add(button_pane);
+    button.addActionListener(new AddDriverAction(this));
 
-		driversTableModel = addTable(panel, null, new String[]{"Name", "Average rate"}, 0, 0);
+		driversTableModel = addTable(panel, null, new String[]{"ID", "Name", "Free"}, 0, 0);
+
+    for (DeliveryDriver driver : pizzeria.getDrivers())
+      addDriverRow(driver);
 
     panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 		return panel;
 	}
 	private Component makeHistoryView() {
 		JPanel panel = new JPanel(new GridLayout());
-		historyTableModel = addTable(panel, null, new String[]{"ID", "Pizzas count * ID", "Drinks", "Client ID", "Driver ID", "Price", "Date"}, 0, 0);
+		historyTableModel = addTable(panel, null, new String[]{"ID", "Client ID", "Pizzas count * ID", "Drinks", "Driver ID", "Price", "Date"}, 0, 0);
+
+    for (ArchivedOrder order : pizzeria.getOrderHistory())
+      addHistoryRow(order);
 
     panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 		return panel;

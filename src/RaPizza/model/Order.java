@@ -7,7 +7,7 @@ public class Order {
   public long ID;
 	public User client;
 	public Pizza[] pizzas;
-	public String[] drinks;
+	public String drinks;
 	public Date date;
   public boolean with_hot_sauce;
 
@@ -17,10 +17,10 @@ public class Order {
 
 	public OrderState state;
 
-	public Order(User client, ArrayList<Pizza> pizzas, ArrayList<String> drinks, boolean hot_sauce) {
+	public Order(User client, ArrayList<Pizza> pizzas, String drinks, boolean hot_sauce) {
 		this.client = client;
 		this.pizzas = pizzas.toArray(new Pizza[0]);
-		this.drinks = drinks.toArray(new String[0]);
+		this.drinks = drinks;
 		this.state = OrderState.Choice;
 		this.price = 0;
 		this.driver = null;

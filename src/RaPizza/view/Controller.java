@@ -16,11 +16,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import RaPizza.model.CataloguedPizza;
+import RaPizza.model.Ingredient;
 import RaPizza.model.Order;
 import RaPizza.model.Pizza;
 import RaPizza.model.User;
@@ -78,9 +80,36 @@ public abstract class Controller implements ActionListener {
           if (!app.pizzeria.orderSend(order)) return false;
           app.removePreparingOrderRow(order.ID);
           app.addSendingOrderRow(order);
+          app.updateDriverRow(order.driver);
         } else {
           if (!app.pizzeria.orderReceive(order)) return false;
+          app.updateDriverRow(order.driver);
           app.removeSendingOrderRow(order.ID);
+          app.addHistoryRow(app.pizzeria.getOrderHistory()[app.pizzeria.getOrderHistory().length - 1]);
+        }
+        return true;
+      }
+    };
+  }
+  public static void WarningView(Application app) {
+    new FramePopup("Warning") {
+      protected JPanel init() {
+        JPanel pane = new JPanel(new GridLayout(2, 1));
+
+        JLabel label = new JLabel("Warning, you have orders in waiting !!");
+        label.setForeground(Color.ORANGE);
+        label.setFont(new Font("Arial", Font.BOLD, 25));
+        pane.add(label);
+
+        pane.add(new JLabel("Would you like to quit without finishing yout work ?"));
+
+        return pane;
+      }
+      protected boolean quit(boolean canceled) {
+        if (!canceled) {
+          app.pizzeria.saveAll();
+          app.dispose();
+          System.exit(0);
         }
         return true;
       }
@@ -197,13 +226,10 @@ class NewOrderAction extends Controller {
             return false;
           }
           ArrayList<Pizza> pizzas = new ArrayList<Pizza>();
-          ArrayList<String> drinks = new ArrayList<String>();
-          for (String s : drinks_field.getText().split(","))
-            drinks.add(s);
           for (int i = 0; i < catalog.length; i++)
             if ((int)pizzas_count[i].getValue() > 0)
               pizzas.add(new Pizza(catalog[i], (int)pizzas_size[i].getValue(), (int)pizzas_count[i].getValue()));
-          if (app.pizzeria.createOrder(client, pizzas, drinks, hot_sauce.isSelected())) {
+          if (app.pizzeria.createOrder(client, pizzas, drinks_field.getText(), hot_sauce.isSelected())) {
             Controller.ManageOrderView(app, app.pizzeria.getOrders()[app.pizzeria.getOrders().length - 1]);
             return true;
           }
@@ -236,6 +262,82 @@ class SelectOrderAction extends Controller {
       protected boolean quit(boolean canceled) {
         if (!canceled)
           ManageOrderView(app, app.pizzeria.getOrder((long)selector.getSelectedItem()));
+        return true;
+      }
+    };
+  }
+}
+
+class addPizzaAction extends Controller {
+  JTextField name, ingredients;
+  JSlider base_price;
+  public addPizzaAction(Application app) { super(app); }
+  public void actionPerformed(ActionEvent e) {
+    new FramePopup("Add pizza") {
+      protected JPanel init() {
+        JPanel pane = new JPanel(new GridLayout(3, 1));
+        pane.add(new JLabel("Name"));
+        pane.add(name = new JTextField());
+        pane.add(new JLabel("Ingredients (comma separated)"));
+        pane.add(ingredients = new JTextField());
+        pane.add(new JLabel("Price in cent"));
+        pane.add(base_price = new JSlider());
+        return pane;
+      }
+      protected boolean quit(boolean canceled) {
+        if (!canceled) {
+          ArrayList<Ingredient> ings = new ArrayList<Ingredient>();
+          try {
+          for (String e : ingredients.getText().split(","))
+            ings.add(app.pizzeria.getIngredient(Integer.parseInt(e)));
+          } catch (java.lang.NumberFormatException e) {
+            return false;
+          }
+          app.pizzeria.createPizza(name.getText(), ings, base_price.getValue() / 100.0f);
+          app.addPizzaRow(app.pizzeria.getCatalog()[app.pizzeria.getCatalog().length - 1]);
+        }
+        return true;
+      }
+    };
+  }
+}
+
+class addIngredientAction extends Controller {
+  JTextField name;
+  public addIngredientAction(Application app) { super(app); }
+  public void actionPerformed(ActionEvent e) {
+    new FramePopup("Add ingredient") {
+      protected JPanel init() {
+        JPanel pane = new JPanel(new GridLayout());
+        pane.add(name = new JTextField());
+        return pane;
+      }
+      protected boolean quit(boolean canceled) {
+        if (!canceled) {
+          app.pizzeria.createIngredient(name.getText());
+          app.addIngredientRow(app.pizzeria.getIngredients()[app.pizzeria.getIngredients().length - 1]);
+        }
+        return true;
+      }
+    };
+  }
+}
+
+class AddDriverAction extends Controller {
+  JTextField name;
+  public AddDriverAction(Application app) { super(app); }
+  public void actionPerformed(ActionEvent e) {
+    new FramePopup("Add ingredient") {
+      protected JPanel init() {
+        JPanel pane = new JPanel(new GridLayout());
+        pane.add(name = new JTextField());
+        return pane;
+      }
+      protected boolean quit(boolean canceled) {
+        if (!canceled) {
+          app.pizzeria.createDriver(name.getText());
+          app.addDriverRow(app.pizzeria.getDrivers()[app.pizzeria.getDrivers().length - 1]);
+        }
         return true;
       }
     };
